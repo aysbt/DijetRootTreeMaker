@@ -84,8 +84,10 @@ process.source = cms.Source("PoolSource",
     #fileNames = cms.untracked.vstring("root://eoscms//eos/cms/store/data/Run2016B/JetHT/MINIAOD/PromptReco-v2/000/273/411/00000/10CB3C59-721B-E611-AFB4-02163E012711.root")
     #fileNames = cms.untracked.vstring("file:/afs/cern.ch/user/j/juska/eos/cms/store/data/Run2016B/JetHT/MINIAOD/PromptReco-v2/000/273/411/00000/10CB3C59-721B-E611-AFB4-02163E012711.root")
     #fileNames = cms.untracked.vstring("file:/afs/cern.ch/user/j/juska/eos/cms/store/data/Run2016B/JetHT/MINIAOD/PromptReco-v2/000/273/730/00000/EA345ED4-B821-E611-BEA5-02163E0138E2.root")
-   #   fileNames = cms.untracked.vstring("/store/data/Run2016G/JetHT/MINIAOD/PromptReco-v1/000/279/588/00000/02E756F7-0C6F-E611-BF1E-02163E0145C2.root")
-    fileNames = cms.untracked.vstring("file:22BA8411-D972-E511-9405-02163E0142D9.root")      
+     # fileNames = cms.untracked.vstring("/store/data/Run2016G/JetHT/MINIAOD/PromptReco-v1/000/279/588/00000/02E756F7-0C6F-E611-BF1E-02163E0145C2.root")
+       fileNames = cms.untracked.vstring("file:root://eoscms.cern.ch///eos/cms/store/data/Run2016B/JetHT/MINIAOD/PromptReco-v2/000/273/730/00000/F88BB0B8-B821-E611-BDBC-02163E01429D.root")
+
+ #   fileNames = cms.untracked.vstring("file:22BA8411-D972-E511-9405-02163E0142D9.root")      
 ) 
 
 ##-------------------- User analyzer  --------------------------------
@@ -138,9 +140,9 @@ process.dijets     = cms.EDAnalyzer('DijetTreeProducer',
                                  'PFHT650MJJ950','PFHT650MJJ900',
                                  'PFJET500','PFJET450','PFJET200',
                                  'HT2000','HT2500','Mu45Eta2p1',
-                                 'AK8DiPFJet280200TrimMass30Btag','AK8PFHT600TriMass50Btag','AK8PFHT700TriMass50','AK8PFJet360TrimMass50',
+                                 'AK8PFHT700TriMass50','AK8PFJet360TrimMass50',
                                  'CaloJet500NoJetID','DiPFJetAve300HFJEC','DiPFJetAve500',
-                                 'PFHT400SixJet30Btag','PFHT450SixJet40Btag','PFHT750FourJetPt50','QuadPFJetVBF'),                                 
+                                 'PFHT750FourJetPt50','QuadPFJetVBF'),                                 
   triggerSelection = cms.vstring(
 
      ###
@@ -163,15 +165,11 @@ process.dijets     = cms.EDAnalyzer('DijetTreeProducer',
      'HLT_HT2000_v*',
      'HLT_HT2500_v*',
      'HLT_Mu45_eta2p1_v*',
-     'HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV0p45_v*',
-     'HLT_AK8PFHT600_TrimR0p1PT0p03Mass50_BTagCSV0p45_v*',
      'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50_v*',
      'HLT_AK8PFJet360_TrimMass30_v*',
      'HLT_CaloJet500_NoJetID_v*',
      'HLT_DiPFJetAve300_HFJEC_v*',
      'HLT_DiPFJetAve500_v*',
-     'HLT_PFHT400_SixJet30_BTagCSV0p55_2PFBTagCSV0p72_v*',
-     'HLT_PFHT450_SixJet40_PFBTagCSV0p72_v*',
      'HLT_PFHT750_4JetPt50_v*',
      'HLT_QuadPFJet_VBF_v*',
      ###
@@ -192,7 +190,7 @@ process.dijets     = cms.EDAnalyzer('DijetTreeProducer',
   noiseFilterSelection_hcalLaserEventFilter = cms.string('Flag_hcalLaserEventFilter'),
   noiseFilterSelection_EcalDeadCellTriggerPrimitiveFilter = cms.string('Flag_EcalDeadCellTriggerPrimitiveFilter'),
   noiseFilterSelection_goodVertices = cms.string('Flag_goodVertices'),
-  noiseFilterSelection_trackingFailureFilter = cms.string('Flag_trackingFailureFilter'),
+  noiseFilterSelection_trackingFailureFilter = cms.string('Flag_chargedHadronTrackResolutionFilter'),
   noiseFilterSelection_eeBadScFilter = cms.string('Flag_eeBadScFilter'),
   noiseFilterSelection_ecalLaserCorrFilter = cms.string('Flag_ecalLaserCorrFilter'),
   noiseFilterSelection_trkPOGFilters = cms.string('Flag_trkPOGFilters'),
@@ -217,6 +215,7 @@ process.dijets     = cms.EDAnalyzer('DijetTreeProducer',
   ## Version Summer15_25nsV3 ( https://hypernews.cern.ch/HyperNews/CMS/get/JetMET/ )
   # Note that it hardly matters what is put in here, as these should be overriden in analysis step anyway. Juska.
   # That's also why these JEC's are greatly dated.
+
   L1corrAK4_DATA = cms.FileInPath('CMSDIJET/DijetRootTreeMaker/data/Summer15_25nsV3_DATA/Summer15_25nsV3_DATA_L1FastJet_AK4PFchs.txt'),
   L2corrAK4_DATA = cms.FileInPath('CMSDIJET/DijetRootTreeMaker/data/Summer15_25nsV3_DATA/Summer15_25nsV3_DATA_L2Relative_AK4PFchs.txt'),
   L3corrAK4_DATA = cms.FileInPath('CMSDIJET/DijetRootTreeMaker/data/Summer15_25nsV3_DATA/Summer15_25nsV3_DATA_L3Absolute_AK4PFchs.txt'),
@@ -231,6 +230,7 @@ process.dijets     = cms.EDAnalyzer('DijetTreeProducer',
   L1corrAK8_MC = cms.FileInPath('CMSDIJET/DijetRootTreeMaker/data/Summer15_25nsV3_MC/Summer15_25nsV3_MC_L1FastJet_AK8PFchs.txt'),
   L2corrAK8_MC = cms.FileInPath('CMSDIJET/DijetRootTreeMaker/data/Summer15_25nsV3_MC/Summer15_25nsV3_MC_L2Relative_AK8PFchs.txt'),
   L3corrAK8_MC = cms.FileInPath('CMSDIJET/DijetRootTreeMaker/data/Summer15_25nsV3_MC/Summer15_25nsV3_MC_L3Absolute_AK8PFchs.txt')
+
 )
 
 

@@ -24,6 +24,15 @@
 #include "DataFormats/METReco/interface/MET.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "DataFormats/Common/interface/ValueMap.h"
+#include "DataFormats/Common/interface/Ref.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/Common/interface/RefProd.h"
+
+
+
 //#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 //#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
@@ -39,7 +48,8 @@ DijetTreeProducer::DijetTreeProducer(edm::ParameterSet const& cfg)
 
 
   
-  /*
+  
+ /*
   srcJetsAK4_         = cfg.getParameter<edm::InputTag>             ("jetsAK4");
   srcJetsAK4Calo_         = cfg.getParameter<edm::InputTag>             ("jetsAK4Calo");
   srcJetsAK4PFCluster_         = cfg.getParameter<edm::InputTag>             ("jetsAK4PFCluster");
@@ -70,7 +80,21 @@ DijetTreeProducer::DijetTreeProducer(edm::ParameterSet const& cfg)
   ptMinAK8_           = cfg.getParameter<double>                    ("ptMinAK8");
   
   srcPU_              = consumes<std::vector<PileupSummaryInfo> >(cfg.getUntrackedParameter<edm::InputTag>    ("pu"));
-  //PUInfoToken = consumes<std::vector<PileupSummaryInfo> >(iConfig.getParameter<edm::InputTag>("PUInfoInputTag"));
+ 
+// abat : added for Q/G jet tag/////////////////
+// deneme
+ // jetsToken(consumes<edm::View<pat::Jet>>(cfg.getParameter<edm::InputTag>("patJetsToken"))); 
+{
+   qgToken  = consumes<edm::ValueMap<float>>(edm::InputTag("QGTagger", "qgLikelihood"));
+   qgToken1 = consumes<edm::ValueMap<float>>(edm::InputTag("QGTagger", "axis2"));
+   qgToken2 = consumes<edm::ValueMap<float>>(edm::InputTag("QGTagger", "ptD"));
+   qgToken3 = consumes<edm::ValueMap<int>>  (edm::InputTag("QGTagger", "mult"));
+}
+         ////////////////////////
+
+
+
+ //PUInfoToken = consumes<std::vector<PileupSummaryInfo> >(iConfig.getParameter<edm::InputTag>("PUInfoInputTag"));
   
   // These are now causing data run to fail. Weird it used to work with 2015 version?!
   isData_ = cfg.getParameter<bool>("isData");
@@ -289,6 +313,17 @@ void DijetTreeProducer::beginJob()
   neMultAK4_         = new std::vector<int>;
   phoMultAK4_        = new std::vector<int>;
   
+  // abat : added for Q/G jet tag
+  qgLDAK4_           = new std::vector<float>;
+  qgaxis2AK4_        = new std::vector<float>;
+  qgptDAK4_          = new std::vector<float>;
+  qgmultAK4_         = new std::vector<int>;
+  partonAK4_         = new std::vector<int>; 
+  ///////////////////   
+
+
+
+ 
   /*
   ptAK4matchCaloJet_  = new std::vector<float>;
   emfAK4matchCaloJet_ = new std::vector<float>;
@@ -355,6 +390,22 @@ void DijetTreeProducer::beginJob()
   outTree_->Branch("neHadMultAK4"           ,"vector<int>"      ,&neHadMultAK4_);   
   outTree_->Branch("neMultAK4"              ,"vector<int>"      ,&neMultAK4_);   
   outTree_->Branch("phoMultAK4"             ,"vector<int>"      ,&phoMultAK4_);   
+  
+  // abat : added for Q/G jet tag
+  outTree_->Branch("qgLDAK4"                ,"vector<float>"      ,&qgLDAK4_);
+  outTree_->Branch("qgaxis2AK4"             ,"vector<float>"      ,&qgaxis2AK4_);
+  outTree_->Branch("qgptDAK4"               ,"vector<float>"      ,&qgptDAK4_);
+  outTree_->Branch("qgmultAK4"              ,"vector<int>"        ,&qgmultAK4_);
+  outTree_->Branch("partonAK4"              ,"vector<int>"        ,&partonAK4_);
+
+
+
+
+
+
+
+
+
   //outTree_->Branch("jetMassPrunedAK4"        ,"vector<float>"     ,&massPrunedAK4_);
   //outTree_->Branch("jetTau1AK4"              ,"vector<float>"     ,&tau1AK4_);
   //outTree_->Branch("jetTau2AK4"              ,"vector<float>"     ,&tau2AK4_);
@@ -619,6 +670,16 @@ void DijetTreeProducer::endJob()
   delete neHadMultAK4_ ;
   delete neMultAK4_    ;
   delete phoMultAK4_   ;
+
+
+  //abat 
+  delete qgLDAK4_ ;
+  delete qgaxis2AK4_ ;
+  delete qgptDAK4_ ;
+  delete qgmultAK4_ ;
+  delete partonAK4_ ;
+
+
 /*
   delete ptAK4matchCaloJet_;
   delete emfAK4matchCaloJet_;
@@ -753,8 +814,11 @@ void DijetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
   initialize();
 
   //edm::Handle<edm::View<pat::Jet> > jetsAK4;
-  Handle<pat::JetCollection> jetsAK4;
-  iEvent.getByToken(srcJetsAK4_,jetsAK4);
+
+   Handle<pat::JetCollection> jetsAK4;
+   iEvent.getByToken(srcJetsAK4_,jetsAK4);
+
+
 
 /*
   edm::Handle<edm::View<reco::CaloJet> > jetsAK4Calo;
@@ -802,6 +866,21 @@ void DijetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 
   Handle<reco::VertexCollection> recVtxs;
   iEvent.getByToken(srcVrtx_,recVtxs);
+
+ // abat : added for Q/G jet tag
+  edm::Handle<edm::ValueMap<float>> qgHandle;
+  iEvent.getByToken(qgToken, qgHandle);
+
+  edm::Handle<edm::ValueMap<float>> qgHandle1;
+  iEvent.getByToken(qgToken1, qgHandle1);
+
+  edm::Handle<edm::ValueMap<float>> qgHandle2;
+  iEvent.getByToken(qgToken2, qgHandle2);
+
+  edm::Handle<edm::ValueMap<int>> qgHandle3;
+  iEvent.getByToken(qgToken3, qgHandle3);
+
+
 
   //-------------- Event Info -----------------------------------
   rho_    = *rho;
@@ -1062,8 +1141,19 @@ void DijetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 
     float eta  = ijet->eta(); // removed fabs() -Juska
     float pt   = ijet->correctedJet(0).pt()*jecFactorsAK4.at(*i); // Is this OK? Correct corrected? -Juska
+    
+     // abat : added for Q/G jet tag      
+     // edm::RefToBase<pat::Jet> jetRef(edm::Ref<edm::View<pat::Jet> >(jetsAK4, ijet -jetsAK4->begin()));
+     edm::RefToBase<pat::Jet> jetRef(edm::Ref<pat::JetCollection> (jetsAK4, ijet -jetsAK4->begin()));
 
-    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
+      float qgLikelihood   = (*qgHandle)[jetRef];
+      float qgaxis2        = (*qgHandle1)[jetRef];
+      float qgptD          = (*qgHandle2)[jetRef];
+      int   qgmult         = (*qgHandle3)[jetRef];
+      int   jid            = ijet->partonFlavour();
+      cout<<"q/g LD"<<qgLikelihood<<endl;
+
+ // https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
     int idL = (nhf<0.99 && nemf<0.99 && NumConst>1 && muf < 0.8) && ((fabs(eta) <= 2.4 && chf>0 && chMult>0 && cemf<0.99) || fabs(eta)>2.4);
     int idT = (nhf<0.90 && nemf<0.90 && NumConst>1 && muf<0.8) && ((fabs(eta)<=2.4 && chf>0 && chMult>0 && cemf<0.90) || fabs(eta)>2.4);
 
@@ -1099,7 +1189,19 @@ void DijetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
       neHadMultAK4_     ->push_back(neHadMult);  
       neMultAK4_        ->push_back(neMult);
       phoMultAK4_       ->push_back(phoMult); 
-      //tau1AK4_          ->push_back(ijet->userFloat("NjettinessAK4:tau1"));
+      
+      //abat     
+      qgLDAK4_          ->push_back(qgLikelihood);
+      qgaxis2AK4_       ->push_back(qgaxis2);
+      qgptDAK4_         ->push_back(qgptD);
+      qgmultAK4_        ->push_back(qgmult);
+      partonAK4_        ->push_back(jid);
+
+  
+
+
+
+   //tau1AK4_          ->push_back(ijet->userFloat("NjettinessAK4:tau1"));
       //tau2AK4_          ->push_back(ijet->userFloat("NjettinessAK4:tau2"));
       //cutbasedJetId_      ->push_back(ijet->userInt("pileupJetIdEvaluator:cutbasedId"));
       //fullJetId_          ->push_back(ijet->userFloat("pileupJetIdEvaluator:fullDiscriminant"));
@@ -1554,7 +1656,20 @@ void DijetTreeProducer::initialize()
   neHadMultAK4_     ->clear();
   neMultAK4_        ->clear();
   phoMultAK4_        ->clear();
-  //massPrunedAK4_     ->clear();
+ 
+
+    //abat
+   qgLDAK4_           ->clear();
+   qgaxis2AK4_        ->clear();
+   qgptDAK4_          ->clear();
+   qgmultAK4_         ->clear();
+   partonAK4_         ->clear();
+
+
+
+
+
+ //massPrunedAK4_     ->clear();
   //tau1AK4_           ->clear();
   //tau2AK4_           ->clear();
   //dRAK4_             ->clear();

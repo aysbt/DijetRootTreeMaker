@@ -24,6 +24,10 @@
 
 #include "DataFormats/PatCandidates/interface/MET.h"
 
+#include "DataFormats/Common/interface/ValueMap.h"
+#include "DataFormats/Common/interface/Ref.h"
+#include "DataFormats/Common/interface/RefProd.h"
+
 
 class DijetTreeProducer : public edm::EDAnalyzer 
 {
@@ -66,7 +70,6 @@ class DijetTreeProducer : public edm::EDAnalyzer
     bool isData_;
     
     // Migrate to consumes-system for running in 80X
-    
     edm::EDGetTokenT<pat::JetCollection> srcJetsAK4_;
     edm::EDGetTokenT<pat::JetCollection> srcJetsAK8_;
 
@@ -80,10 +83,19 @@ class DijetTreeProducer : public edm::EDAnalyzer
     
     edm::EDGetTokenT<std::vector<PileupSummaryInfo> > srcPU_;
     edm::EDGetTokenT<GenEventInfoProduct> srcGenInfo_;
-
     edm::Service<TFileService> fs_;
-    TTree *outTree_;
+//deneme
+     //edm::EDGetTokenT<pat::Jet> jetsToken;
+   TTree *outTree_;
+    //abat added for q/g tag
+    edm::EDGetTokenT<edm::ValueMap<float>> qgToken;
+    edm::EDGetTokenT<edm::ValueMap<float>> qgToken1;
+    edm::EDGetTokenT<edm::ValueMap<float>> qgToken2;
+    edm::EDGetTokenT<edm::ValueMap<int>>   qgToken3;
 
+
+
+ 
     //---- TRIGGER -------------------------
     triggerExpression::Data triggerCache_;
     std::vector<triggerExpression::Evaluator*> vtriggerSelector_;
@@ -129,8 +141,8 @@ class DijetTreeProducer : public edm::EDAnalyzer
     bool passFilterTrkPOG_logError_;
 
     //---- jet and genJet variables --------------
-    std::vector<float> *ptAK4_,*jecAK4_,*etaAK4_,*phiAK4_,*massAK4_,*energyAK4_,*areaAK4_,*csvAK4_,*chfAK4_,*nhfAK4_,*phfAK4_,*elfAK4_,*mufAK4_,*nemfAK4_,*cemfAK4_;
-    std::vector<int> *idLAK4_,*idTAK4_, *chHadMultAK4_, *chMultAK4_, *neHadMultAK4_, *neMultAK4_, *phoMultAK4_;
+    std::vector<float> *ptAK4_,*jecAK4_,*etaAK4_,*phiAK4_,*massAK4_,*energyAK4_,*areaAK4_,*csvAK4_,*chfAK4_,*nhfAK4_,*phfAK4_,*elfAK4_,*mufAK4_,*nemfAK4_,*cemfAK4_,*qgLDAK4_,*qgaxis2AK4_,*qgptDAK4_;
+    std::vector<int> *idLAK4_,*idTAK4_, *chHadMultAK4_, *chMultAK4_, *neHadMultAK4_, *neMultAK4_, *phoMultAK4_,*partonAK4_,*qgmultAK4_;
     std::vector<float> *hf_hfAK4_, *hf_emfAK4_, *hofAK4_;
     //std::vector<float> *cutbasedJetId_, *fullJetId_, *fullJetDiscriminant_;
     std::vector<float> *ptGenAK4_,*etaGenAK4_,*phiGenAK4_,*massGenAK4_,*energyGenAK4_;
