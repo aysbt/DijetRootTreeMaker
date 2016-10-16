@@ -7,30 +7,23 @@ process.load('Configuration.EventContent.EventContent_cff')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff')
 
-###################################### Run on AOD instead of MiniAOD? ########
-runOnAOD=False
-###################################### Run on RECO instead of MiniAOD? ########
-runOnRECO=False
-if runOnRECO: runOnAOD=True
-
 ## ----------------- Global Tag ------------------
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
-
 process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_miniAODv2'
-
+#process.GlobalTag.globaltag = 'MCRUN2_74_V9A::All'
 
 
 #--------------------- Report and output ---------------------------
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(10))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
 
 process.load('FWCore.MessageService.MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 
 
 process.TFileService=cms.Service("TFileService",
-                                 fileName=cms.string('mylocaltest_10.root'),
+                                 fileName=cms.string('qg_tag_dijet_MC_localrootfile.root'),
                                  closeFileFast = cms.untracked.bool(True)
                                  )
 
@@ -38,29 +31,21 @@ process.TFileService=cms.Service("TFileService",
 
 process.options = cms.untracked.PSet(
         allowUnscheduled = cms.untracked.bool(True),
-        wantSummary = cms.untracked.bool(False),
+        wantSummary  = cms.untracked.bool(False),
 )
 
 ############## output  edm format ###############
 process.out = cms.OutputModule('PoolOutputModule',                                                                                                                  
                                fileName = cms.untracked.string('jettoolbox.root'),                                                                              
                                outputCommands = cms.untracked.vstring([
-                                                                       # 'keep *_ak4PFJetsCHS_*_*',                                                                    
-                                                                       # 'keep *_patJetsAK4PFCHS_*_*',                                                                  
-                                                                       # 'keep *_ca8PFJetsCHS_*_*',                                                                     
-                                                                       # 'keep *_patJetsCA8PFCHS_*_*',                                                                  
-                                                                       # 'keep *_ak8PFJetsCHS_*_*',                                                                     
-                                                                       # 'keep *_patJetsAK8PFCHS_*_*',                                                                  
-                                                                      'keep *_slimmedJets_*_*',                                                           
+                                                                      'keep *_slimmedJets_*_*',                                                                  
                                                                       'keep *_slimmedJetsAK8_*_*',                                                                  
                                                                        ])                                                                                           
                                )
 
 
-
 # ----------------------- Jet Tool Box  -----------------
 # ----- giulia test: do not recluster ak4 and ca8 jets to save time --------
-
 
 process.chs = cms.EDFilter('CandPtrSelector', src = cms.InputTag('packedPFCandidates'), cut = cms.string('fromPV'))
 
@@ -68,6 +53,7 @@ from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
 process.slimmedGenJetsAK8 = ak4GenJets.clone(src = 'packedGenParticles', rParam = 0.8)
 
 
+#-------------------------------------------------------
 # Gen Particles Pruner
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
@@ -83,7 +69,6 @@ process.prunedGenParticlesDijet = cms.EDProducer('GenParticlePruner',
 #------------- Recluster Gen Jets to access the constituents -------
 #already in toolbox, just add keep statements
 
-
 process.out.outputCommands.append("keep *_slimmedGenJets_*_*")
 process.out.outputCommands.append("keep *_slimmedGenJetsAK8_*_*")
 
@@ -92,28 +77,36 @@ process.out.outputCommands.append("keep *_slimmedGenJetsAK8_*_*")
 
 
 process.source = cms.Source("PoolSource",
-    # 2016B data "file:/afs/cern.ch/user/j/juska/eos/cms/store/data/Run2016B/JetHT/MINIAOD/PromptReco-v1/000/272/771/00000/B4A77EBA-DB15-E611-A15E-02163E013590.root")
-#	fileNames = cms.untracked.vstring("file:/afs/cern.ch/user/j/juska/eos/cms/store/mc/RunIISpring16MiniAODv2/QCD_Pt_800to1000_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/60000/ECC2E244-E41B-E611-AE5B-02163E01655E.root") # mAODv2 
-	# mAODv1 "file:/afs/cern.ch/user/j/juska/eos/cms/store/mc/RunIISpring16MiniAODv1/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/00000/4EC1A37D-840D-E611-957D-0025905C543A.root")
- fileNames = cms.untracked.vstring("file:root://eoscms.cern.ch///eos/cms/store/data/Run2016B/JetHT/MINIAOD/PromptReco-v2/000/273/730/00000/F88BB0B8-B821-E611-BDBC-02163E01429D.root")
-    )
+    #fileNames = cms.untracked.vstring('file:QstarToJJ_M_4000_TuneCUETP8M1_13TeV_pythia8__MINIAODSIM__Asympt50ns_MCRUN2_74_V9A-v1__70000__AA35D1E7-FEFE-E411-B1C5-0025905B858A.root')    
+    #fileNames = cms.untracked.vstring('/store/mc/RunIISpring15DR74/QstarToJJ_M_1000_TuneCUETP8M1_13TeV_pythia8/AODSIM/Asympt50ns_MCRUN2_74_V9A-v1/50000/00F85752-BCFB-E411-A29A-000F5327349C.root')
+   # fileNames = cms.untracked.vstring('root://xrootd.unl.edu//store/mc/RunIISpring15DR74/QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/50000/0E4CEBFE-ECFB-E411-9F0C-842B2B29273C.root')
+     fileNames = cms.untracked.vstring("file:root://eoscms.cern.ch///eos/cms/store/data/Run2016B/JetHT/MINIAOD/PromptReco-v2/000/273/730/00000/F88BB0B8-B821-E611-BDBC-02163E01429D.root")  
+  )
+
 
 
 
 ##-------------------- User analyzer  --------------------------------
 
-
+#Residue from deleted reco and AOD sequences
 calo_collection=''
 cluster_collection=''
 pfcalo_collection=''
    
+## Modification for q/g jet tagging module:
+process.load('RecoJets.JetProducers.QGTagger_cfi')
+process.QGTagger.srcJets = cms.InputTag('slimmedJets')
+process.QGTagger.jetsLabel = cms.string('QGL_AK4PFchs')
+process.QGTagger.jec = cms.InputTag('')
+process.QGTagger.systematicsLabel = cms.string('')
+
+
 
 process.dijets     = cms.EDAnalyzer('DijetTreeProducer',
-
+  
   # There's no avoiding this in Consumes era
   isData          = cms.bool(False),
-
-  ## JETS/MET ########################################
+  
   jetsAK4             = cms.InputTag('slimmedJets'), 
   jetsAK8             = cms.InputTag('slimmedJetsAK8'),     
   rho              = cms.InputTag('fixedGridRhoFastjetAll'),
@@ -121,13 +114,13 @@ process.dijets     = cms.EDAnalyzer('DijetTreeProducer',
   vtx              = cms.InputTag('offlineSlimmedPrimaryVertices'),
   ptMinAK4         = cms.double(10),
   ptMinAK8         = cms.double(10),
-  
+
   ## MC ########################################
-  pu               = cms.untracked.InputTag('slimmedAddPileupInfo'), # Updated from untracked to 80X by Juska
-  ptHat            = cms.untracked.InputTag('generator'), # Why do these need to be 'untracked' anyway?
+  pu               = cms.untracked.InputTag('slimmedAddPileupInfo'),
+  ptHat            = cms.untracked.InputTag('generator'),
   genParticles     = cms.InputTag('prunedGenParticlesDijet'),
   genJetsAK4             = cms.InputTag('slimmedGenJets'), 
-  genJetsAK8             = cms.InputTag('slimmedGenJetsAK8'),
+  genJetsAK8             = cms.InputTag('slimmedGenJetsAK8'),     
 
 
   ## trigger ###################################
@@ -161,7 +154,7 @@ process.dijets     = cms.EDAnalyzer('DijetTreeProducer',
   noiseFilterSelection_hcalLaserEventFilter = cms.string('Flag_hcalLaserEventFilter'),
   noiseFilterSelection_EcalDeadCellTriggerPrimitiveFilter = cms.string('Flag_EcalDeadCellTriggerPrimitiveFilter'),
   noiseFilterSelection_goodVertices = cms.string('Flag_goodVertices'),
-  noiseFilterSelection_trackingFailureFilter = cms.string('Flag_trackingFailureFilter'),
+  noiseFilterSelection_trackingFailureFilter = cms.string('Flag_chargedHadronTrackResolutionFilter'),
   noiseFilterSelection_eeBadScFilter = cms.string('Flag_eeBadScFilter'),
   noiseFilterSelection_ecalLaserCorrFilter = cms.string('Flag_ecalLaserCorrFilter'),
   noiseFilterSelection_trkPOGFilters = cms.string('Flag_trkPOGFilters'),
@@ -172,7 +165,6 @@ process.dijets     = cms.EDAnalyzer('DijetTreeProducer',
 
   noiseFilterConfiguration = cms.PSet(
     hltResults            = cms.InputTag('TriggerResults','','PAT'),
-    #hltResults            = cms.InputTag('TriggerResults','','jetToolbox'),
     l1tResults            = cms.InputTag(''),
     daqPartitions         = cms.uint32(1),
     l1tIgnoreMask         = cms.bool(False),
@@ -205,11 +197,8 @@ process.dijets     = cms.EDAnalyzer('DijetTreeProducer',
 # ------------------ path --------------------------
 
 process.p = cms.Path()
-
-if runOnRECO:
-   process.p += process.pfClusterRefsForJets_step
-                                                        
 process.p +=                     process.prunedGenParticlesDijet
+process.p +=                     process.QGTagger
 process.p +=                     process.chs 
 process.p +=                     process.slimmedGenJetsAK8                      
 process.p +=                     process.dijets 
