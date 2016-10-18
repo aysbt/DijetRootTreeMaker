@@ -16,7 +16,7 @@ process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_miniAODv2'
 
 #--------------------- Report and output ---------------------------
 
-process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1000))
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 5000
@@ -80,8 +80,10 @@ process.source = cms.Source("PoolSource",
     #fileNames = cms.untracked.vstring('file:QstarToJJ_M_4000_TuneCUETP8M1_13TeV_pythia8__MINIAODSIM__Asympt50ns_MCRUN2_74_V9A-v1__70000__AA35D1E7-FEFE-E411-B1C5-0025905B858A.root')    
     #fileNames = cms.untracked.vstring('/store/mc/RunIISpring15DR74/QstarToJJ_M_1000_TuneCUETP8M1_13TeV_pythia8/AODSIM/Asympt50ns_MCRUN2_74_V9A-v1/50000/00F85752-BCFB-E411-A29A-000F5327349C.root')
    # fileNames = cms.untracked.vstring('root://xrootd.unl.edu//store/mc/RunIISpring15DR74/QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/50000/0E4CEBFE-ECFB-E411-9F0C-842B2B29273C.root')
-     fileNames = cms.untracked.vstring("file:root://eoscms.cern.ch///eos/cms/store/data/Run2016B/JetHT/MINIAOD/PromptReco-v2/000/273/730/00000/F88BB0B8-B821-E611-BDBC-02163E01429D.root")  
+    # fileNames = cms.untracked.vstring("file:root://eoscms.cern.ch///eos/cms/store/data/Run2016B/JetHT/MINIAOD/PromptReco-v2/000/273/730/00000/F88BB0B8-B821-E611-BDBC-02163E01429D.root")  
+     fileNames = cms.untracked.vstring("file:root://eoscms.cern.ch//eos/cms/store/mc/RunIISpring16MiniAODv2/QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/50000/EE1D6309-DF1A-E611-8DDC-A0369F7F9324.root")
   )
+
 
 
 
@@ -124,11 +126,10 @@ process.dijets     = cms.EDAnalyzer('DijetTreeProducer',
 
 
   ## trigger ###################################
-  triggerAlias     = cms.vstring('PFHT900','PFHT650','PFHT600','PFHT350'
+  triggerAlias     = cms.vstring('PFHT650','PFHT600','PFHT350'
                                  ,'PFHT650MJJ950','PFHT650MJJ900'
                                  ,'PFJET500','PFJET450','PFJET200'),
   triggerSelection = cms.vstring(
-     'HLT_PFHT900_v*',
      'HLT_PFHT650_v*',
      'HLT_PFHT600_v*',
      'HLT_PFHT350_v*',

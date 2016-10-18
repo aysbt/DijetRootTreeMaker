@@ -95,8 +95,9 @@ process.source = cms.Source("PoolSource",
     # 2016B data "file:/afs/cern.ch/user/j/juska/eos/cms/store/data/Run2016B/JetHT/MINIAOD/PromptReco-v1/000/272/771/00000/B4A77EBA-DB15-E611-A15E-02163E013590.root")
 #	fileNames = cms.untracked.vstring("file:/afs/cern.ch/user/j/juska/eos/cms/store/mc/RunIISpring16MiniAODv2/QCD_Pt_800to1000_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/60000/ECC2E244-E41B-E611-AE5B-02163E01655E.root") # mAODv2 
 	# mAODv1 "file:/afs/cern.ch/user/j/juska/eos/cms/store/mc/RunIISpring16MiniAODv1/QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/00000/4EC1A37D-840D-E611-957D-0025905C543A.root")
- fileNames = cms.untracked.vstring("file:root://eoscms.cern.ch///eos/cms/store/data/Run2016B/JetHT/MINIAOD/PromptReco-v2/000/273/730/00000/F88BB0B8-B821-E611-BDBC-02163E01429D.root")
-    )
+ #fileNames = cms.untracked.vstring("file:root://eoscms.cern.ch///eos/cms/store/data/Run2016B/JetHT/MINIAOD/PromptReco-v2/000/273/730/00000/F88BB0B8-B821-E611-BDBC-02163E01429D.root")
+  fileNames = cms.untracked.vstring("file:root://eoscms.cern.ch//eos/cms/store/mc/RunIISpring16MiniAODv2/QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/50000/EE1D6309-DF1A-E611-8DDC-A0369F7F9324.root") 
+)
 
 
 
